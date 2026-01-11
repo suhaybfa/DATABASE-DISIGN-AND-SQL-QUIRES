@@ -14,11 +14,10 @@
 <h2>Technologies</h2>
 <p>Oracle SQL / PL/SQL</p>
 
-<h2>ERD</h2>
-<p>Normalized to 3NF</p>
+<h2>ERD Normalized to 3NF</h2>
+<img width="840" height="555" alt="Screenshot 1447-07-22 at 1 13 47 PM" src="https://github.com/user-attachments/assets/da879fc9-48ea-4110-b1d2-7757d3315b42" />
 
 <h2>Database Schema</h2>
 <p>Includes all core tables: Suppliers, Employees, Departments, Customer, TechProducts, ProjectManagement, Orders, Payments, Dependents, ServiceRequests.</p>
 
-<img width="840" height="555" alt="Screenshot 1447-07-22 at 1 13 47 PM" src="https://github.com/user-attachments/assets/da879fc9-48ea-4110-b1d2-7757d3315b42" />
 <img width="752" height="359" alt="Screenshot 1447-07-22 at 1 14 02 PM" src="https://github.com/user-attachments/assets/5c00d5f3-55f3-4556-ba28-0ddea92a0ec4" />
