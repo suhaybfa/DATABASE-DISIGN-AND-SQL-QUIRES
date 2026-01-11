@@ -7,7 +7,6 @@
   <li><strong>Tables:</strong> Creation of 10 core tables with primary and foreign keys.</li>
   <li><strong>Constraints:</strong> Enforcement of data integrity via PKs and FKs.</li>
   <li><strong>Triggers:</strong> Automated inventory updates and salary compliance checks.</li>
-  <li><strong>Sample Data:</strong> Inserts for initial testing.</li>
   <li><strong>Queries:</strong> Examples using aggregates, CTEs, subqueries, and joins for reporting and analytics.</li>
 </ul>
 
