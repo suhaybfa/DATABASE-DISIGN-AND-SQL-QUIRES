@@ -1,71 +1,88 @@
--- Requirement: Display Department Name, total employees, and total salary per department.
+--i used Aggregates, CTEs, Subqueries and join to make usefull extracts --
+
+/*  Calculate the total stock value and quantity available for each product category. */
+SELECT 
+    Category, 
+    SUM(AvailableUnits) AS Total_Stock, 
+    SUM(Price * AvailableUnits) AS Inventory_Value,
+    MAX(Price) AS Most_Expensive_Item
+FROM TechProducts
+GROUP BY Category;
+
+
+/* Identify the most demanded service types and their current completion status. */
+SELECT 
+    ServiceType, 
+    Status, 
+    COUNT(RequestID) AS Request_Count
+FROM ServiceRequests
+GROUP BY ServiceType, Status
+ORDER BY Request_Count DESC;
+
+
+/*  Group customers by loyalty levels to understand the distribution of the rewards program. */
+SELECT 
+    LoyaltyPoints, 
+    COUNT(CustomerID) AS Number_of_Customers
+FROM Customer
+GROUP BY LoyaltyPoints
+HAVING COUNT(CustomerID) > 0;
+/*  Summarize business performance by status to see total revenue and volume of orders. */
+SELECT 
+    Status, 
+    COUNT(OrderID) AS Total_Orders, 
+    SUM(TotalAmount) AS Total_Revenue,
+    AVG(TotalAmount) AS Average_Order_Value
+FROM Orders
+GROUP BY Status;
+
+/*  Join Customer and Orders to calculate total revenue and order frequency per client. */
+SELECT 
+    c.CustomerName, 
+    COUNT(o.OrderID) AS Order_Count, 
+    SUM(o.TotalAmount) AS Total_Revenue,
+    MAX(o.OrderDate) AS Last_Order_Date
+FROM Customer c
+JOIN Orders o ON c.CustomerID = o.CustomerID
+GROUP BY c.CustomerName
+ORDER BY Total_Revenue DESC; 
+
+/*  compare total employee salaries against department project budgets. */
+WITH DeptCosts AS (
+    SELECT DepartmentID, SUM(Salary) AS Total_Payroll
+    FROM Employees
+    GROUP BY DepartmentID
+)
 SELECT 
     d.DepartmentName, 
-    COUNT(e.EmployeeID) AS Total_Staff, 
-    SUM(e.Salary) AS Monthly_Budget
+    dc.Total_Payroll, 
+    p.ProjectName, 
+    p.Budget
 FROM Departments d
-JOIN Employees e ON d.DepartmentID = e.DepartmentID
-GROUP BY d.DepartmentName;
+JOIN DeptCosts dc ON d.DepartmentID = dc.DepartmentID
+JOIN ProjectManagement p ON d.DepartmentID = p.DepartmentID;
 
--- Requirement: List employees earning more than the average salary of the entire company.
-SELECT FirstName, LastName, Salary, Position
-FROM Employees
-WHERE Salary > (SELECT AVG(Salary) FROM Employees);
-
-
--- Requirement: Link Employees to Departments and find the specific Manager's name for that Dept.
+/*   find products with stock below average and list supplier details. */
 SELECT 
-    e.FirstName AS Employee_Name, 
-    d.DepartmentName, 
-    m.FirstName AS Department_Manager
-FROM Employees e
-JOIN Departments d ON e.DepartmentID = d.DepartmentID
-JOIN Employees m ON d.ManagerID = m.EmployeeID;
+    tp.ProductName, 
+    tp.AvailableUnits, 
+    s.SupplierName, 
+    s.Email AS Supplier_Contact
+FROM TechProducts tp
+JOIN Suppliers s ON tp.SupplierID = s.SupplierID
+WHERE tp.AvailableUnits < (SELECT AVG(AvailableUnits) FROM TechProducts);
 
 
--- Requirement: Filter groups of data (departments) based on an aggregate condition (average salary).
+-- link customers, their tech products, and the employees handling their requests. */
 SELECT 
-    d.DepartmentName, 
-    AVG(e.Salary) AS Avg_Salary
-FROM Departments d
-JOIN Employees e ON d.DepartmentID = e.DepartmentID
-GROUP BY d.DepartmentName
-HAVING AVG(e.Salary) > 60000;
+    sr.RequestID, 
+    c.CustomerName, 
+    tp.ProductName, 
+    e.FirstName || ' ' || e.LastName AS Technician,
+    sr.Status
+FROM ServiceRequests sr
+JOIN Customer c ON sr.CustomerID = c.CustomerID
+JOIN TechProducts tp ON sr.ProductID = tp.ProductID
+JOIN Employees e ON sr.EmployeeID = e.EmployeeID;
 
--- Requirement: Find employees who are at the top of the hierarchy (ManagerID is NULL).
-SELECT FirstName, LastName, Position
-FROM Employees
-WHERE ManagerID IS NULL;
-
--- Requirement: Extract the year from HireDate and count occurrences.
-SELECT 
-    EXTRACT(YEAR FROM HireDate) AS Hire_Year, 
-    COUNT(EmployeeID) AS New_Hires
-FROM Employees
-GROUP BY EXTRACT(YEAR FROM HireDate)
-ORDER BY Hire_Year DESC;
-
--- Requirement: Extract the employee(s) who earn the maximum salary in their respective departments.
-SELECT FirstName, LastName, Salary, DepartmentID
-FROM Employees e1
-WHERE Salary = (
-    SELECT MAX(Salary) 
-    FROM Employees e2 
-    WHERE e1.DepartmentID = e2.DepartmentID
-);
-
--- Requirement: Count how many subordinates report to each manager.
-SELECT 
-    m.FirstName AS Manager_Name, 
-    COUNT(e.EmployeeID) AS Number_of_Reports
-FROM Employees m
-JOIN Employees e ON m.EmployeeID = e.ManagerID
-GROUP BY m.FirstName;
-
-
---  List all employees hired after January 1st, 2020, sorted by the most recent.
-SELECT FirstName, LastName, HireDate
-FROM Employees
-WHERE HireDate >= TO_DATE('2020-01-01', 'YYYY-MM-DD')
-ORDER BY HireDate DESC;
 
