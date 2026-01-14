@@ -73,16 +73,4 @@ JOIN Suppliers s ON tp.SupplierID = s.SupplierID
 WHERE tp.AvailableUnits < (SELECT AVG(AvailableUnits) FROM TechProducts);
 
 
--- link customers, their tech products, and the employees handling their requests. */
-SELECT 
-    sr.RequestID, 
-    c.CustomerName, 
-    tp.ProductName, 
-    e.FirstName || ' ' || e.LastName AS Technician,
-    sr.Status
-FROM ServiceRequests sr
-JOIN Customer c ON sr.CustomerID = c.CustomerID
-JOIN TechProducts tp ON sr.ProductID = tp.ProductID
-JOIN Employees e ON sr.EmployeeID = e.EmployeeID;
-
 
