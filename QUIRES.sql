@@ -1,4 +1,4 @@
---i used Aggregates, CTEs, Subqueries and join to make usefull extracts --
+---- I used aggregates, CTEs, subqueries, and joins to create useful extracts --
 
 /*  Calculate the total stock value and quantity available for each product category. */
 SELECT 
